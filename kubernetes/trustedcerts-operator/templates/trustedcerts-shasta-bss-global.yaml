@@ -1,0 +1,19 @@
+apiVersion: certificates.hpe.com/v1alpha1
+kind: TrustedCertificates
+metadata:
+  name: bss-global
+spec:
+  destinations:
+  - config:
+      url: http://cray-bss.services.svc.cluster.local/boot/v1/bootparameters
+      encoding: pem
+      remove_defaults: "false"
+    name: bss-global
+    type: bss 
+  sources:
+  - config:
+      encoding: pem
+      format: vault-pki-ca-chain
+      url: http://cray-vault.vault.svc.cluster.local:8200/v1/pki_common/ca_chain
+    name: vault-pki
+    type: http

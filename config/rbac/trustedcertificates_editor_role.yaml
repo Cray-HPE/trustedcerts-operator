@@ -1,0 +1,24 @@
+# permissions for end users to edit trustedcertificates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: trustedcertificates-editor-role
+rules:
+- apiGroups:
+  - certificates.hpe.com
+  resources:
+  - trustedcertificates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - certificates.hpe.com
+  resources:
+  - trustedcertificates/status
+  verbs:
+  - get

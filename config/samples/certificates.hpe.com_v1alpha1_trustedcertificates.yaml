@@ -1,0 +1,7 @@
+apiVersion: certificates.hpe.com/v1alpha1
+kind: TrustedCertificates
+metadata:
+  name: trustedcertificates-sample
+spec:
+  # Add fields here
+  foo: bar
