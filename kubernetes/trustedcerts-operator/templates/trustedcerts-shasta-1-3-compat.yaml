@@ -1,0 +1,34 @@
+apiVersion: certificates.hpe.com/v1alpha1
+kind: TrustedCertificates
+metadata:
+  name: shasta-platform-1-3-compat # provide backward compat with Shasta 1.3
+spec:
+  sources: # single source, a pem bundle from unauthed vault source
+    - name: vault-pki
+      type: http
+      config:
+         url: "http://cray-vault.vault.svc.cluster.local:8200/v1/pki_common/ca_chain"
+         encoding: "pem"
+         format: "vault-pki-ca-chain"
+  destinations:
+    - name: default
+      type: configmap
+      config:
+         name: cray-configmap-ca-public-key
+         namespace: default
+         encoding: "pem"
+         bundle_key: "certificate_authority.crt" # key used to store 'bundle' of all certs
+    - name: ims
+      type: configmap
+      config:
+         name: cray-configmap-ca-public-key
+         namespace: ims
+         encoding: "pem"
+         bundle_key: "certificate_authority.crt" # key used to store 'bundle' of all certs
+    - name: opa
+      type: configmap
+      config:
+         name: cray-configmap-ca-public-key
+         namespace: opa
+         encoding: "pem"
+         bundle_key: "certificate_authority.crt" # key used to store 'bundle' of all certs

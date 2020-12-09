@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trustedcerts-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    hpe-operator: trustedcerts
+    app: trustedcerts-operator
+spec:
+  selector:
+    matchLabels:
+      hpe-operator: trustedcerts
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        hpe-operator: trustedcerts
+        app: trustedcerts-operator
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - trustedcerts-operator
+                topologyKey: kubernetes.io/hostname
+      serviceAccountName: trustedcerts-operator
+      containers:
+      - command:
+        - /manager
+        args:
+        - --enable-leader-election
+        - --namespace
+        - {{ .Release.Namespace }}
+        {{- range .Values.watchNamespaces }}
+        - --namespace 
+        - {{ . }}
+        {{- end }}
+        image: '{{ include "image-prefix" .Values }}cray/cray-trustedcerts-operator:{{ include "image-tag" . }}'
+        name: trustedcerts-operator
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+      terminationGracePeriodSeconds: 10

@@ -1,0 +1,11 @@
+imagesHost: "dtr.dev.cray.com"
+# watchNamespaces must contain namespaces that the operator
+# will watch for both trustedcerts CRs and configmap 
+# management. Will automatically include release namespace.
+watchNamespaces:
+  - default
+  - ims
+  - istio-system
+  - opa
+  - services
+  - sma
