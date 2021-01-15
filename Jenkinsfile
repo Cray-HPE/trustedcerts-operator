@@ -8,4 +8,5 @@ dockerBuildPipeline {
         description = "HPE TrustedCerts K8S Operator"
         dockerfile = "Dockerfile"
         product = "shasta-standard,shasta-premium"
+        githubPushRepo = "Cray-HPE/trustedcerts-operator"
 }
