@@ -9,4 +9,5 @@ dockerBuildPipeline {
         dockerfile = "Dockerfile"
         product = "shasta-standard,shasta-premium"
         githubPushRepo = "Cray-HPE/trustedcerts-operator"
+        githubPushBranches = /(release\/.*|master)/
 }
