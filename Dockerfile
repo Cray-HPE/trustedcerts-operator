@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM dtr.dev.cray.com/baseos/golang:1.14.9-alpine3.12 AS builder
+FROM arti.dev.cray.com/baseos-docker-master-local/golang:1.14.9-alpine3.12 AS builder
 
 RUN apk add make bash curl
 
@@ -20,7 +20,7 @@ COPY Makefile Makefile
 # Vet
 RUN go vet -mod="vendor" ./cmd/... ./internal/...
 
-# TODO: Integate test env from makefile
+# TODO: Integrate test env from makefile
 RUN make test
 
 # Lint 
@@ -29,11 +29,10 @@ RUN ./util/golint -set_exit_status ./cmd/... ./internal/...
 # Build
 RUN go build -mod="vendor" -a -o manager ./cmd/manager/main.go
 
-# Use distroless as minimal base image to package the manager binary
-# Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM dtr.dev.cray.com/cache/gct-distroless-static:nonroot
+FROM arti.dev.cray.com/baseos-docker-master-local/alpine:3.12.7
 WORKDIR /
 COPY --from=builder /workspace/manager .
+RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
 USER nonroot:nonroot
 
 ENTRYPOINT ["/manager"]
