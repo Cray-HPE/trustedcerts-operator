@@ -55,7 +55,7 @@ import (
 
 	//"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	certificateshpecomv1alpha1 "stash.us.cray.com/projects/SPET/repos/trustedcerts-operator/internal/api/v1alpha1"
+	certificateshpecomv1alpha1 "github.com/Cray-HPE/trustedcerts-operator/internal/api/v1alpha1"
 )
 
 // TrustedCertificatesReconciler reconciles a TrustedCertificates object
@@ -306,7 +306,7 @@ func validateSourceConfig(ctx context.Context, source certificateshpecomv1alpha1
     "title": "SourceConfigHTTP",
     "type": "object",
     "properties": {
-	"url": { 
+	"url": {
 	   "type": "string",
 	   "format": "uri"
 	 },
@@ -367,17 +367,17 @@ func validateDestinationConfig(ctx context.Context, destination certificateshpec
     "title": "DestinationConfigConfigmap",
     "type": "object",
     "properties": {
-	"name": { 
+	"name": {
 	   "type": "string"
 	 },
-	 "namespace": { 
+	 "namespace": {
 	   "type": "string"
 	 },
 	 "encoding": {
 	    "type": "string",
 	    "pattern": "^(pem)$"
 	 },
-	 "bundle_key": { 
+	 "bundle_key": {
 	   "type": "string"
 	 }
     },
@@ -391,7 +391,7 @@ func validateDestinationConfig(ctx context.Context, destination certificateshpec
 		"title": "DestinationConfigBSS",
 		"type": "object",
 		"properties": {
-		"url": { 
+		"url": {
 		   "type": "string"
 		 },
 		 "encoding": {

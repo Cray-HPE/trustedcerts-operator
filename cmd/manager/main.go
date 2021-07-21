@@ -28,8 +28,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	certificateshpecomv1alpha1 "stash.us.cray.com/projects/SPET/repos/trustedcerts-operator/internal/api/v1alpha1"
-	"stash.us.cray.com/projects/SPET/repos/trustedcerts-operator/internal/controllers"
+	certificateshpecomv1alpha1 "github.com/Cray-HPE/trustedcerts-operator/internal/api/v1alpha1"
+	"github.com/Cray-HPE/trustedcerts-operator/internal/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
