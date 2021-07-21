@@ -1,7 +1,7 @@
 domain: hpe.com
 layout: go.kubebuilder.io/v2
 projectName: trustedcerts-operator
-repo: stash.us.cray.com/projects/SPET/repos/trustedcerts-operator
+repo: github.com/Cray-HPE/trustedcerts-operator
 resources:
 - group: certificates
   kind: TrustedCertificates

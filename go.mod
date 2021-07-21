@@ -1,4 +1,4 @@
-module stash.us.cray.com/projects/SPET/repos/trustedcerts-operator
+module github.com/Cray-HPE/trustedcerts-operator
 
 go 1.13
 
