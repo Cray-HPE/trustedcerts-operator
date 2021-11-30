@@ -9,7 +9,7 @@ spec:
       encoding: pem
       remove_defaults: "false"
     name: bss-global
-    type: bss 
+    type: bss
   sources:
   - config:
       encoding: pem
