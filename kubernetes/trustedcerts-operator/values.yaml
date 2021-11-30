@@ -1,6 +1,9 @@
-imagesHost: "dtr.dev.cray.com"
+image:
+  repository: artifactory.algol60.net/csm-docker/stable/trustedcerts-operator
+  pullPolicy: IfNotPresent
+
 # watchNamespaces must contain namespaces that the operator
-# will watch for both trustedcerts CRs and configmap 
+# will watch for both trustedcerts CRs and configmap
 # management. Will automatically include release namespace.
 watchNamespaces:
   - default

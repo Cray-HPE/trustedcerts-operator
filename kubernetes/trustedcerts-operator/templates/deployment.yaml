@@ -38,10 +38,11 @@ spec:
         - --namespace
         - {{ .Release.Namespace }}
         {{- range .Values.watchNamespaces }}
-        - --namespace 
+        - --namespace
         - {{ . }}
         {{- end }}
-        image: '{{ include "image-prefix" .Values }}cray/cray-trustedcerts-operator:{{ include "image-tag" . }}'
+        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: trustedcerts-operator
         resources:
           limits:
