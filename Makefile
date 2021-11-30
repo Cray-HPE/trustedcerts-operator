@@ -41,7 +41,7 @@ chart_setup:
 	mkdir -p ${CHART_PATH}/.packaged
 
 chart_package:
-    echo "appVersion: ${VERSION}" >> ${CHART_PATH}/${NAME}/Chart.yaml
+	echo "appVersion: ${VERSION}" >> ${CHART_PATH}/${NAME}/Chart.yaml
 	helm dep up ${CHART_PATH}/${NAME}
 	helm package ${CHART_PATH}/${NAME} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION}
 
