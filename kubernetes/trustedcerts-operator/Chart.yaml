@@ -1,4 +1,14 @@
 apiVersion: v2
-description: "TrustedCerts Operator"
 name: trustedcerts-operator
-version: 0.1.1
+version: 0.4.0
+description: TrustedCerts Operator
+keywords:
+- trustedcerts
+home: https://github.com/Cray-HPE/trustedcerts-operator
+sources:
+- https://github.com/Cray-HPE/trustedcerts-operator
+maintainers:
+- name: kburns-hpe
+- name: brantk-hpe
+annotations:
+  artifacthub.io/license: MIT
