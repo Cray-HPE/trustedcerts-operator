@@ -27,7 +27,7 @@ endif
 
 # Chart args
 CHART_PATH ?= kubernetes
-CHART_VERSION ?= $(shell cat .version)
+CHART_VERSION ?= local
 HELM_UNITTEST_IMAGE ?= quintush/helm-unittest:3.3.0-0.2.5
 
 all: manager
@@ -39,11 +39,11 @@ chart: chart_setup chart_package chart_test
 
 chart_setup:
 	mkdir -p ${CHART_PATH}/.packaged
-	printf "\nglobal:\n  appVersion: ${VERSION}" >> ${CHART_PATH}/${NAME}/values.yaml
 
 chart_package:
+	echo "appVersion: ${VERSION}" >> ${CHART_PATH}/${NAME}/Chart.yaml
 	helm dep up ${CHART_PATH}/${NAME}
-	helm package ${CHART_PATH}/${NAME} -d ${CHART_PATH}/.packaged --app-version ${VERSION} --version ${CHART_VERSION}
+	helm package ${CHART_PATH}/${NAME} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION}
 
 chart_test:
 	helm lint "${CHART_PATH}/${NAME}"
