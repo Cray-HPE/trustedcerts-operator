@@ -41,7 +41,7 @@ spec:
         - --namespace
         - {{ . }}
         {{- end }}
-        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        image: {{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: trustedcerts-operator
         resources:
