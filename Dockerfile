@@ -1,7 +1,10 @@
 # Build the manager binary
-FROM arti.dev.cray.com/baseos-docker-master-local/golang:1.14.9-alpine3.12 AS builder
+FROM artifactory.algol60.net/docker.io/golang:1.14.15-alpine3.13 AS builder
 
-RUN apk add make bash curl
+RUN apk add --upgrade apk-tools &&  \
+  apk update && apk -U upgrade && \
+  apk add make bash curl && \
+  rm -rf /var/cache/apk/*
 
 WORKDIR /workspace
 
@@ -23,13 +26,18 @@ RUN go vet -mod="vendor" ./cmd/... ./internal/...
 # TODO: Integrate test env from makefile
 RUN make test
 
-# Lint 
+# Lint
 RUN ./util/golint -set_exit_status ./cmd/... ./internal/...
 
 # Build
 RUN go build -mod="vendor" -a -o manager ./cmd/manager/main.go
 
-FROM arti.dev.cray.com/baseos-docker-master-local/alpine:3.12.7
+FROM artifactory.algol60.net/docker.io/alpine:3.15.0
+
+RUN apk add --upgrade apk-tools &&  \
+  apk update && apk -U upgrade && \
+  rm -rf /var/cache/apk/*
+
 WORKDIR /
 COPY --from=builder /workspace/manager .
 RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
