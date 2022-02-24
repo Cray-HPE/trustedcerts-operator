@@ -1,6 +1,6 @@
 image:
   repository: artifactory.algol60.net/csm-docker/stable/trustedcerts-operator
-  tag: 0.1.1
+  tag: 0.1.2
   pullPolicy: IfNotPresent
 
 # watchNamespaces must contain namespaces that the operator
