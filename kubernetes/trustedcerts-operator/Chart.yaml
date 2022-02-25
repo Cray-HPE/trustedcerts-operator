@@ -32,6 +32,5 @@ sources:
   - https://github.com/Cray-HPE/trustedcerts-operator
 maintainers:
   - name: kburns-hpe
-  - name: brantk-hpe
 annotations:
   artifacthub.io/license: MIT
