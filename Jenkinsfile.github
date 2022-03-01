@@ -15,7 +15,7 @@ pipeline {
         DESCRIPTION = "HPE TrustedCerts K8S Operator"
         IS_STABLE = getBuildIsStable()
         VERSION = getDockerBuildVersion(isStable: env.IS_STABLE)
-        CHART_VERSION = getChartVersion(version: env.VERSION)
+        CHART_VERSION = getChartVersion(name: env.NAME, isStable: env.IS_STABLE)
         DOCKER_ARGS = getDockerBuildArgs(name: env.NAME, description: env.DESCRIPTION)
     }
 

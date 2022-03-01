@@ -23,7 +23,7 @@
 #
 image:
   repository: artifactory.algol60.net/csm-docker/stable/trustedcerts-operator
-  tag: 0.1.2
+  tag: 0.2.0
   pullPolicy: IfNotPresent
 
 # watchNamespaces must contain namespaces that the operator
