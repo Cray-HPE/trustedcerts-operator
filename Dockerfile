@@ -55,11 +55,7 @@ RUN ./util/golint -set_exit_status ./cmd/... ./internal/...
 # Build
 RUN go build -mod="vendor" -a -o manager ./cmd/manager/main.go
 
-FROM artifactory.algol60.net/docker.io/alpine:3.15.0
-
-RUN apk add --upgrade apk-tools &&  \
-  apk update && apk -U upgrade && \
-  rm -rf /var/cache/apk/*
+FROM artifactory.algol60.net/csm-docker/stable/docker.io/library/alpine:3
 
 WORKDIR /
 COPY --from=builder /workspace/manager .
