@@ -1,0 +1,78 @@
+#
+# MIT License
+#
+# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trusted-cert-build-go
+spec:
+  params:
+    - name: OUTPUT
+      description: name of the go binary to be created
+
+    - name: TARGET
+      description: directory where the go source resides to be built
+
+
+  workspaces:
+    - name: source
+      description: Where the git clones the repo to.
+  steps:
+    - name: go-vet
+      image: gcr.io/oci-tekton-service-dev/go-build:latest@sha256:cbd0be55e546204d5375f81a587df9006c9def6067dc55cdc7c907781911c3fb
+      env:
+        - name: GOMODCACHE
+          value: $(workspaces.source.path)/source/gomod
+      script: |
+        cd $(workspaces.source.path)/source/
+        
+        export CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on
+
+        # Vet
+        echo "Running Go Vet" 
+        go vet -mod="vendor" ./cmd/... ./internal/...
+
+    - name: go-lint
+      image: gcr.io/oci-tekton-service-dev/go-build:latest@sha256:cbd0be55e546204d5375f81a587df9006c9def6067dc55cdc7c907781911c3fb
+      env:
+        - name: GOMODCACHE
+          value: $(workspaces.source.path)/source/gomod
+      script: |
+        cd $(workspaces.source.path)/source/
+
+        export CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on
+         # Lint
+        echo "Running Go Lint" 
+        ./util/golint -set_exit_status ./cmd/... ./internal/...
+
+    - name: go-build
+      image: gcr.io/oci-tekton-service-dev/go-build:latest@sha256:cbd0be55e546204d5375f81a587df9006c9def6067dc55cdc7c907781911c3fb
+      env:
+        - name: GOMODCACHE
+          value: $(workspaces.source.path)/source/gomod
+      script: |
+        cd $(workspaces.source.path)/source/
+        export CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on
+        # Build
+        echo "Running Go Build of $(params.OUTPUT) $(params.TARGET)" 
+        go build -mod="vendor" -a -o $(params.OUTPUT) $(params.TARGET)
