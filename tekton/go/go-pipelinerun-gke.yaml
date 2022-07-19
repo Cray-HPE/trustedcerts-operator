@@ -5,7 +5,7 @@ metadata:
 spec:
   params:
     - name: GIT_URL
-      value: "https://github.com/chainguard/trusted-cert"
+      value: "https://github.com/chainguard/trusted-cert.git"
 
     - name: APPLICATION
       value: "trustedcerts-operator"
