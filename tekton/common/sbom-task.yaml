@@ -67,7 +67,7 @@ spec:
     image: gcr.io/projectsigstore/cosign:v1.9.0
     timeout: 10m
     args: [
-      "attest",
+      "attach sbom",
       # Use workload identity to access images
       "--k8s-keychain",
       # Disable timeout (registry http fallback takes more than the default)
@@ -79,7 +79,8 @@ spec:
       # Use the Fulcio URL provided by the refresher.
       "--fulcio-url", "$(params['FULCIO_ENDPOINT'])",
       # Use the "predicate" produced by the previous step.
-      "--predicate", "/workspace/image.sbom",
+      "--sbom", "/workspace/image.sbom",
+      "--type", "spdx",
       "$(params['IMAGE'])"
     ]
     env:

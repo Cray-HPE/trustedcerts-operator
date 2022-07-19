@@ -34,9 +34,6 @@ spec:
     - name: GIT_REVISION
       description: Revision to checkout. (branch, tag, sha, ref, etc...)
 
-    - name: APPLICATION
-      description: name of the repo
-
     - name: OUTPUT
       description: name of the go binary to be created
 

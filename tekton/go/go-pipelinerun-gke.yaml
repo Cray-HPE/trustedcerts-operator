@@ -5,7 +5,7 @@ metadata:
 spec:
   params:
     - name: GIT_URL
-      value: "https://github.com/strongjz/trustedcerts-operator.git"
+      value: "https://github.com/chainguard/trusted-cert"
 
     - name: APPLICATION
       value: "trustedcerts-operator"
@@ -17,7 +17,7 @@ spec:
       value: "./cmd/manager/"
 
     - name: GIT_REVISION
-      value: "tekton"
+      value: "master"
 
     - name: IMAGE
       value: "gcr.io/oci-tekton-service-dev/trustedcert-operator"
@@ -32,7 +32,7 @@ spec:
       value: "/data/ctlog-public.pem"
 
     - name: COSIGN_REPOSITORY
-      value: "gcr.io/oci-tekton-service-dev/trustedcert-operator/manager"
+      value: "gcr.io/oci-tekton-service-dev/trustedcert-operator"
 
     - name: FULCIO_ENDPOINT
       value: "http://fulcio.default.svc.cluster.local"
