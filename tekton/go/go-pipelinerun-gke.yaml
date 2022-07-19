@@ -5,10 +5,7 @@ metadata:
 spec:
   params:
     - name: GIT_URL
-      value: "https://github.com/chainguard/trusted-cert.git"
-
-    - name: APPLICATION
-      value: "trustedcerts-operator"
+      value: "https://github.com/chainguard-dev/trusted-cert.git"
 
     - name: OUTPUT
       value: "manager"
@@ -17,7 +14,7 @@ spec:
       value: "./cmd/manager/"
 
     - name: GIT_REVISION
-      value: "master"
+      value: "tekton"
 
     - name: IMAGE
       value: "gcr.io/oci-tekton-service-dev/trustedcert-operator"
