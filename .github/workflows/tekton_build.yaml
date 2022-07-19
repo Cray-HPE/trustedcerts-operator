@@ -3,19 +3,17 @@
 
 name: Tekon Nightly Build
 
+# Run the tekton build on merges to master branch.
 on:
-  push:
-    branches:
-      - tekton
   pull_request:
-  workflow_dispatch:
-  pull_request_target:
-  schedule:
-    # HPE-images ran on 0 0 * * * lets run this one hour after
-    - cron: "0 2 * * *"
+    branches:
+      - master
+    types:
+      - closed
 
 jobs:
-  image-update:
+  tekton-build:
+    if: github.event.pull_request.merged
     name: Tekon Nightly Build
     runs-on: ubuntu-latest
 
