@@ -22,3 +22,7 @@ bin
 *.swp
 *.swo
 *~
+
+
+gha-creds-*.json
+/tekton/trusted-cert-key

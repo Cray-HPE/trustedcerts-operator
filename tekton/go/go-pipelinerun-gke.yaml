@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: trusted-cert-pipeline-run
+spec:
+  params:
+    - name: GIT_URL
+      value: "https://github.com/chainguard-dev/trusted-cert.git"
+
+    - name: OUTPUT
+      value: "manager"
+
+    - name: TARGET
+      value: "./cmd/manager/"
+
+    - name: GIT_REVISION
+      value: "tekton"
+
+    - name: IMAGE
+      value: "gcr.io/oci-tekton-service-dev/trustedcert-operator"
+
+    - name: DOCKERFILE
+      value: "source/Dockerfile-token"
+
+    - name: CONTEXT
+      value: "./source"
+
+    - name: SIGSTORE_CT_LOG_PUBLIC_KEY_FILE
+      value: "/data/ctlog-public.pem"
+
+    - name: COSIGN_REPOSITORY
+      value: "gcr.io/oci-tekton-service-dev/trustedcert-operator"
+
+    - name: FULCIO_ENDPOINT
+      value: "http://fulcio.default.svc.cluster.local"
+
+    - name: REKOR_ENDPOINT
+      value: "http://rekor.default.svc.cluster.local"
+
+  pipelineRef:
+    name: trusted-cert-build-pipeline
+  podTemplate:
+    ImagePullSecrets:
+      - name: registry-credentials
+    automountServiceAccountToken: false
+  serviceAccountName: trustcert-sa
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: trusted-cert-source
+    - name: dockerconfig
+      secret:
+        secretName: registry-credentials
+    - name: dependencies
+      persistentVolumeClaim:
+        claimName: trusted-cert-deps

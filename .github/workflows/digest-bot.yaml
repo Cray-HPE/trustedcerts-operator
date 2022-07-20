@@ -1,0 +1,45 @@
+# Copyright 2022 Chainguard, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Digest Bot Image digest update
+
+on:
+  workflow_dispatch:
+  schedule:
+    # HPE-images ran on 0 0 * * * lets run this one hour after
+    - cron: "0 1 * * *"
+
+jobs:
+  image-update:
+    name: Digest Bot Image digest update
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@ceee102ec2387dd9e844e01b530ccd4ec87ce955
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup GCloud SDK
+        uses: google-github-actions/setup-gcloud@877d4953d2c70a0ba7ef3290ae968eb24af233bb
+
+      - name: Print gcloud info
+        run: 'gcloud info'
+
+      - name: Docker Credentials
+        shell: bash
+        run: gcloud auth configure-docker
+
+      - uses: chainguard-dev/actions/digesta-bot@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

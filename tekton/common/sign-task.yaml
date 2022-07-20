@@ -1,0 +1,93 @@
+#
+# MIT License
+#
+# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sign-image
+spec:
+  workspaces:
+  params:
+  - name: IMAGE
+    type: string
+    description: container image name
+  - name: COSIGN_REPOSITORY
+    type: string
+    description: OCI repository for cosign to push sbom attestation too
+    default: ""
+  - name: SIGSTORE_CT_LOG_PUBLIC_KEY_FILE
+    type: string
+    default: ""
+    description: |
+      Cosign requires the ct log public key when interacting with private instances
+      Setting this env variable will over ride what is used to validate the SCT coming back from Fulcio.
+  - name: FULCIO_ENDPOINT
+    type: string
+    description: address of sigstore PKI server
+  - name: REKOR_ENDPOINT
+    type: string
+    description: cosign defaults to using the public instance of rekor at rekor.sigstore.dev. To configure the rekor server
+
+  steps:
+  - name: sign
+    image: gcr.io/projectsigstore/cosign:v1.9.0
+    timeout: 2m
+    args: [
+      "sign",
+      # Use workload identity to access images
+      "--k8s-keychain",
+      # Use the Rekor URL provided by the refresher.
+      "--rekor-url", "$(params['REKOR_ENDPOINT'])",
+      # Use the Fulcio URL provided by the refresher.
+      "--fulcio-url", "$(params['FULCIO_ENDPOINT'])",
+      "--force",
+      "--allow-insecure-registry",
+      "$(params['IMAGE'])",
+    ]
+    env:
+    - name: COSIGN_EXPERIMENTAL
+      value: "1"
+    - name: COSIGN_REPOSITORY
+      value: $(params["COSIGN_REPOSITORY"])
+    - name: SIGSTORE_CT_LOG_PUBLIC_KEY_FILE
+      value: $(params["SIGSTORE_CT_LOG_PUBLIC_KEY_FILE"])
+    volumeMounts:
+    - name: oidc-info
+      mountPath: /var/run/sigstore/cosign
+    - mountPath: /data
+      name: ctlog-public-key
+  volumes:
+    - name: oidc-info
+      projected:
+        sources:
+          - serviceAccountToken:
+              path: oidc-token
+              expirationSeconds: 600 # Use as short-lived as possible.
+              audience: sigstore
+    - name: ctlog-public-key
+      secret:
+        items:
+          - key: public
+            path: public
+        secretName: ctlog-public-key

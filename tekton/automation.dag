@@ -1,0 +1,25 @@
+graph ER {
+	fontname="Helvetica,Arial,sans-serif"
+	node [fontname="Helvetica,Arial,sans-serif"]
+	edge [fontname="Helvetica,Arial,sans-serif"]
+
+	node [shape=box]; HPE_Images_Repo; TrustCert;
+	node [shape=box]; Tekton; GO_BUILDER;
+	node [shape=box]; GO_BUILD_GCR; TRUSTED_CERT_TEKTON_BUILD;
+	node [shape=octagon,style=filled,color=lightblue] GKE_CLUSTER;
+	node [shape=diamond,style=filled,color=lightgrey]; "Digest_Bot"; "HPE_Images"; "GKE";
+
+    { rank=same HPE_Images_Repo TrustCert }
+    { rank=same GO_BUILD_GCR GO_BUILDER }
+    HPE_Images_Repo -- HPE_Images;
+    HPE_Images -- GO_BUILD_GCR;
+    Digest_Bot -- GO_BUILD_GCR;
+    Digest_Bot -- GO_BUILDER;
+    TrustCert -- Tekton;
+    Tekton -- GO_BUILDER;
+    GO_BUILDER -- GKE;
+    GKE -- GKE_CLUSTER;
+    GKE_CLUSTER -- TRUSTED_CERT_TEKTON_BUILD;
+
+	fontsize=10;
+}

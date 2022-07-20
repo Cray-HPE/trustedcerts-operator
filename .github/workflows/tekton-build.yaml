@@ -1,0 +1,78 @@
+# Copyright 2022 Chainguard, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Tekon Nightly Build
+
+# Run the tekton build on merges to master branch.
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+
+jobs:
+  tekton-build:
+    if: github.event.pull_request.merged
+    name: Tekon Nightly Build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@ceee102ec2387dd9e844e01b530ccd4ec87ce955
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup GCloud SDK
+        uses: google-github-actions/setup-gcloud@877d4953d2c70a0ba7ef3290ae968eb24af233bb
+
+      - name: Print gcloud info
+        run: 'gcloud info'
+
+      - name: Docker Credentials
+        shell: bash
+        run: gcloud auth configure-docker
+
+      - name: GKE Credentials
+        id: 'get-credentials'
+        uses: google-github-actions/get-gke-credentials@054fdb05e32039f72764f03e69e6acb20caa6f56
+        with:
+          cluster_name: ${{ secrets.CLUSTER_NAME }}
+          location: ${{ secrets.CLUSTER_LOCATION }}
+
+      - name: Install Tekton CLI
+        shell: bash
+        run: |
+          curl -sfLo tkn.tar.gz https://github.com/tektoncd/cli/releases/download/v0.24.0/tkn_0.24.0_Linux_x86_64.tar.gz
+          tar xvzf tkn.tar.gz tkn
+          chmod +x ./tkn
+          ./tkn help
+
+      - name: Connect to bastion
+        shell: bash
+        run: |
+          gcloud compute ssh --force-key-file-overwrite --zone ${{ secrets.BASTION_ZONE }} ${{ secrets.BASTION_NAME}} --tunnel-through-iap --project ${{ secrets.GCP_PROJECT_ID }} -- -N -D 8118 &
+          echo "HTTPS_PROXY=socks5://localhost:8118" >> $GITHUB_ENV
+          sleep 30
+
+      - name: Run Tekton Build
+        shell: bash
+        run: | 
+          # Setting HTTPS_PROXY to the GCP bastion
+          export HTTPS_PROXY=${{ env.HTTPS_PROXY }}
+          
+          # Deploy the Tekton pieces to ensure everything is updates
+          kubectl apply -f tekton/common/
+          kubectl apply -f tekton/go/
+          
+          # Start the pipeline 
+          ./tkn pipeline start trusted-cert-build-pipeline --use-pipelinerun trusted-cert-pipeline-run
