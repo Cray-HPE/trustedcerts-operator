@@ -14,7 +14,7 @@ spec:
       value: "./cmd/manager/"
 
     - name: GIT_REVISION
-      value: "tekton"
+      value: "master"
 
     - name: IMAGE
       value: "gcr.io/oci-tekton-service-dev/trustedcert-operator"
