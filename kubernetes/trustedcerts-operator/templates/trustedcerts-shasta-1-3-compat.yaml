@@ -32,3 +32,10 @@ spec:
          namespace: opa
          encoding: "pem"
          bundle_key: "certificate_authority.crt" # key used to store 'bundle' of all certs
+    - name: argo
+      type: configmap
+      config:
+         name: cray-configmap-ca-public-key
+         namespace: argo
+         encoding: "pem"
+         bundle_key: "certificate_authority.crt" # key used to store 'bundle' of all certs
