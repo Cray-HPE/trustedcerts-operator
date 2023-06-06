@@ -1,6 +1,5 @@
-
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
@@ -17,80 +16,79 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  validation:
-    openAPIV3Schema:
-      description: TrustedCertificates is the Schema for the trustedcertificates API
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          type: object
-        spec:
-          description: TrustedCertificatesSpec defines the desired state of TrustedCertificates
-          properties:
-            destinations:
-              items:
-                description: Destination Certificate destination struct
-                properties:
-                  config:
-                    additionalProperties:
-                      type: string
-                    type: object
-                  name:
-                    maxLength: 255
-                    minLength: 1
-                    type: string
-                  type:
-                    pattern: (configmap|bss)
-                    type: string
-                required:
-                - config
-                - name
-                - type
-                type: object
-              minItems: 1
-              type: array
-            sources:
-              items:
-                description: Source Certificate source struct
-                properties:
-                  config:
-                    additionalProperties:
-                      type: string
-                    type: object
-                  name:
-                    maxLength: 255
-                    minLength: 1
-                    type: string
-                  type:
-                    pattern: (http)
-                    type: string
-                required:
-                - config
-                - name
-                - type
-                type: object
-              minItems: 1
-              type: array
-          required:
-          - destinations
-          - sources
-          type: object
-        status:
-          description: TrustedCertificatesStatus defines the observed state of TrustedCertificates
-          type: object
-      type: object
-  version: v1alpha1
   versions:
   - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: TrustedCertificates is the Schema for the trustedcertificates API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: TrustedCertificatesSpec defines the desired state of TrustedCertificates
+            properties:
+              destinations:
+                items:
+                  description: Destination Certificate destination struct
+                  properties:
+                    config:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    name:
+                      maxLength: 255
+                      minLength: 1
+                      type: string
+                    type:
+                      pattern: (configmap|bss)
+                      type: string
+                  required:
+                  - config
+                  - name
+                  - type
+                  type: object
+                minItems: 1
+                type: array
+              sources:
+                items:
+                  description: Source Certificate source struct
+                  properties:
+                    config:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    name:
+                      maxLength: 255
+                      minLength: 1
+                      type: string
+                    type:
+                      pattern: (http)
+                      type: string
+                  required:
+                  - config
+                  - name
+                  - type
+                  type: object
+                minItems: 1
+                type: array
+            required:
+            - destinations
+            - sources
+            type: object
+          status:
+            description: TrustedCertificatesStatus defines the observed state of TrustedCertificates
+            type: object
+        type: object
     served: true
     storage: true
 status:
