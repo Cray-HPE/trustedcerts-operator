@@ -44,11 +44,5 @@ spec:
         image: {{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: trustedcerts-operator
-        resources:
-          limits:
-            cpu: 100m
-            memory: 75Mi
-          requests:
-            cpu: 100m
-            memory: 50Mi
+        resources: {{- .Values.trustedcertsOperator.resources | toYaml | nindent 10 }}
       terminationGracePeriodSeconds: 10
