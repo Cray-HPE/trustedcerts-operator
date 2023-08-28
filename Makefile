@@ -25,12 +25,17 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+EPOCH := $(shell date +%s)
 # Chart args
 CHART_PATH ?= kubernetes
-CHART_VERSION ?= local
-HELM_UNITTEST_IMAGE ?= quintush/helm-unittest:3.3.0-0.2.5
+CHART_VERSION ?= 9000.0.$(EPOCH)
+
+CHART_OUT := $(CHART_PATH)/.packaged
 
 all: manager
+
+clean:
+	-rm -fr $(CHART_OUT)
 
 image:
 	docker build --pull ${DOCKER_ARGS} --tag '${NAME}:${VERSION}' .
@@ -38,16 +43,20 @@ image:
 chart: chart_setup chart_package chart_test
 
 chart_setup:
-	mkdir -p ${CHART_PATH}/.packaged
+	mkdir -p $(CHART_OUT)
 
-chart_package:
+${CHART_PATH}/${NAME}/Chart.yaml: .version
+	awk '!/appVersion[:]/' ${CHART_PATH}/${NAME}/Chart.yaml > ${CHART_PATH}/${NAME}/Chart.yaml.make
+	mv ${CHART_PATH}/${NAME}/Chart.yaml.make ${CHART_PATH}/${NAME}/Chart.yaml
 	echo "appVersion: ${VERSION}" >> ${CHART_PATH}/${NAME}/Chart.yaml
+
+chart_package: ${CHART_PATH}/${NAME}/Chart.yaml
 	helm dep up ${CHART_PATH}/${NAME}
-	helm package ${CHART_PATH}/${NAME} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION}
+	helm package ${CHART_PATH}/${NAME} -d $(CHART_OUT) --version ${CHART_VERSION}
 
 chart_test:
 	helm lint "${CHART_PATH}/${NAME}"
-	docker run --rm -v ${PWD}/${CHART_PATH}:/apps ${HELM_UNITTEST_IMAGE} -3 ${NAME}
+	helm unittest "${CHART_PATH}/${NAME}"
 
 # Run tests
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
