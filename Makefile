@@ -25,11 +25,17 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+EPOCH := $(shell date +%s)
 # Chart args
 CHART_PATH ?= kubernetes
-CHART_VERSION ?= 9000.0.0
+CHART_VERSION ?= 9000.0.$(EPOCH)
+
+CHART_OUT := $(CHART_PATH)/.packaged
 
 all: manager
+
+clean:
+	-rm -fr $(CHART_OUT)
 
 image:
 	docker build --pull ${DOCKER_ARGS} --tag '${NAME}:${VERSION}' .
@@ -37,7 +43,7 @@ image:
 chart: chart_setup chart_package chart_test
 
 chart_setup:
-	mkdir -p ${CHART_PATH}/.packaged
+	mkdir -p $(CHART_OUT)
 
 ${CHART_PATH}/${NAME}/Chart.yaml: .version
 	awk '!/appVersion[:]/' ${CHART_PATH}/${NAME}/Chart.yaml > ${CHART_PATH}/${NAME}/Chart.yaml.make
@@ -46,7 +52,7 @@ ${CHART_PATH}/${NAME}/Chart.yaml: .version
 
 chart_package: ${CHART_PATH}/${NAME}/Chart.yaml
 	helm dep up ${CHART_PATH}/${NAME}
-	helm package ${CHART_PATH}/${NAME} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION}
+	helm package ${CHART_PATH}/${NAME} -d $(CHART_OUT) --version ${CHART_VERSION}
 
 chart_test:
 	helm lint "${CHART_PATH}/${NAME}"
