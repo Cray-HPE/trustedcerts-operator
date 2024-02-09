@@ -37,3 +37,13 @@ watchNamespaces:
   - services
   - sma
   - argo
+# Default values for the operator deployment so that helm users can customize
+# limits directly without editing deployments.
+trustedcertsOperator:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 50Mi
